@@ -5,6 +5,14 @@
   "version": "0.1.0",
   "publisher": "ondrej-winter",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ondrej-winter/copilot-bridge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ondrej-winter/copilot-bridge/issues"
+  },
+  "homepage": "https://github.com/ondrej-winter/copilot-bridge#readme",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -18,8 +26,8 @@
     "api",
     "chat"
   ],
-  "activationEvents": [
-    "onCommand:copilotBridge.start"
+  "extensionKind": [
+    "workspace"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -44,7 +52,7 @@
         "copilotBridge.bindAddress": {
           "type": "string",
           "default": "127.0.0.1",
-          "description": "Bind address (always enforced to localhost)"
+          "description": "Bind address for the HTTP server (localhost only for security)"
         },
         "copilotBridge.token": {
           "type": "string",
@@ -53,7 +61,7 @@
         },
         "copilotBridge.defaultFamily": {
           "type": "string",
-          "default": "gpt-4o",
+          "default": "auto",
           "description": "Default model family (e.g., 'gpt-4o', 'gpt-3.5-turbo', or 'auto')"
         },
         "copilotBridge.maxBodyBytes": {
@@ -68,6 +76,8 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "clean": "rm -rf out",
+    "package": "vsce package",
     "pretest": "npm run compile",
     "format": "biome format --write .",
     "format:check": "biome format .",
@@ -87,6 +97,7 @@
     "@types/node": "^18.x",
     "@types/vscode": "^1.85.0",
     "@vitest/coverage-v8": "^4.0.18",
+    "@vscode/vsce": "^3.2.1",
     "openai": "^4.28.0",
     "typescript": "^5.3.0",
     "vitest": "^4.0.18"
