@@ -36,6 +36,21 @@ interface ErrorResponse {
   details?: string;
 }
 
+interface ModelInfo {
+  id: string;
+  vendor: string;
+  family: string;
+  name: string;
+  maxInputTokens: number;
+  version?: string;
+  [key: string]: any; // Allow any additional properties from the API
+}
+
+interface ModelsResponse {
+  models: ModelInfo[];
+  count: number;
+}
+
 interface BridgeConfig {
   port: number;
   bindAddress: string;
@@ -68,8 +83,51 @@ function getConfig(): BridgeConfig {
 }
 
 // ============================================================================
-// Model Selection
+// Model Selection & Listing
 // ============================================================================
+
+async function listAvailableModels(): Promise<ModelsResponse> {
+  outputChannel.appendLine(`[Models] Listing all available Copilot models`);
+  
+  const models = await vscode.lm.selectChatModels({ vendor: 'copilot' });
+  
+  outputChannel.appendLine(`[Models] Found ${models.length} total models`);
+  
+  const modelInfos: ModelInfo[] = models.map(model => {
+    // Start with known properties
+    const info: ModelInfo = {
+      id: model.id,
+      vendor: model.vendor,
+      family: model.family,
+      name: model.name,
+      maxInputTokens: model.maxInputTokens
+    };
+    
+    // Add version if available
+    if ('version' in model && model.version) {
+      info.version = (model as any).version;
+    }
+    
+    // Capture all other enumerable properties dynamically
+    for (const key in model) {
+      if (model.hasOwnProperty(key) && !info.hasOwnProperty(key)) {
+        info[key] = (model as any)[key];
+      }
+    }
+    
+    // Log all properties for the first model to help debugging
+    if (models.indexOf(model) === 0) {
+      outputChannel.appendLine(`[Models] Sample model properties: ${JSON.stringify(info, null, 2)}`);
+    }
+    
+    return info;
+  });
+  
+  return {
+    models: modelInfos,
+    count: modelInfos.length
+  };
+}
 
 async function selectChatModel(requestedFamily?: string): Promise<vscode.LanguageModelChat> {
   const config = getConfig();
@@ -235,7 +293,7 @@ async function handleRequest(
 
   // Set CORS headers (only for localhost)
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   // Handle OPTIONS preflight
@@ -264,9 +322,35 @@ async function handleRequest(
   // Route handling
   if (req.url === '/v1/chat' && req.method === 'POST') {
     await handleChatRequest(req, res, config);
+  } else if (req.url === '/v1/models' && req.method === 'GET') {
+    await handleModelsRequest(req, res);
   } else {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Not Found', details: `Unknown endpoint: ${req.method} ${req.url}` }));
+  }
+}
+
+async function handleModelsRequest(
+  req: http.IncomingMessage,
+  res: http.ServerResponse
+): Promise<void> {
+  try {
+    outputChannel.appendLine(`[Models] Handling GET /v1/models request`);
+    
+    const modelsResponse = await listAvailableModels();
+    
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(modelsResponse, null, 2));
+    
+  } catch (err) {
+    outputChannel.appendLine(`[Error] Models request failed: ${err}`);
+    
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    const errorResponse: ErrorResponse = {
+      error: 'Internal Server Error',
+      details: err instanceof Error ? err.message : String(err)
+    };
+    res.end(JSON.stringify(errorResponse));
   }
 }
 
