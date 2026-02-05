@@ -15,7 +15,7 @@ export class ChatMessage {
   constructor(role: MessageRole, content: string) {
     this.validateRole(role);
     this.validateContent(content);
-    
+
     this.role = role;
     this.content = content;
   }
@@ -23,9 +23,7 @@ export class ChatMessage {
   private validateRole(role: MessageRole): void {
     const validRoles: MessageRole[] = ['system', 'user', 'assistant'];
     if (!validRoles.includes(role)) {
-      throw new InvalidMessageError(
-        `Invalid message role: ${role}. Must be 'system', 'user', or 'assistant'`
-      );
+      throw new InvalidMessageError(`Invalid message role: ${role}. Must be 'system', 'user', or 'assistant'`);
     }
   }
 

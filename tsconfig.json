@@ -3,9 +3,7 @@
     "module": "commonjs",
     "target": "ES2022",
     "outDir": "out",
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "sourceMap": true,
     "rootDir": "src",
     "strict": true,
@@ -15,8 +13,5 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "exclude": [
-    "node_modules",
-    ".vscode-test"
-  ]
+  "exclude": ["node_modules", ".vscode-test", "tests", "vitest.config.ts", "vitest.e2e.config.ts"]
 }

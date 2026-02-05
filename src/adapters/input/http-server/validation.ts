@@ -1,5 +1,5 @@
-import * as http from 'http';
-import { BridgeConfig } from '../../../application/ports/ConfigurationPort';
+import type * as http from 'node:http';
+import type { BridgeConfig } from '../../../application/ports/ConfigurationPort';
 
 /**
  * Check if request is from localhost
@@ -10,13 +10,15 @@ export function isLocalhost(remoteAddress?: string): boolean {
   if (!remoteAddress) {
     return false;
   }
-  // Remove IPv6 port suffix if present
-  const addr = remoteAddress.replace(/:\d+$/, '');
+  // Check localhost addresses (with or without port)
   return (
-    addr === '127.0.0.1' ||
-    addr === 'localhost' ||
-    addr === '::1' ||
-    addr === '::ffff:127.0.0.1'
+    remoteAddress === '127.0.0.1' ||
+    remoteAddress === 'localhost' ||
+    remoteAddress === '::1' ||
+    remoteAddress === '::ffff:127.0.0.1' ||
+    remoteAddress.startsWith('127.0.0.1:') ||
+    remoteAddress.startsWith('localhost:') ||
+    remoteAddress.startsWith('::ffff:127.0.0.1:')
   );
 }
 
@@ -26,10 +28,7 @@ export function isLocalhost(remoteAddress?: string): boolean {
  * @param config - Bridge configuration
  * @returns True if valid or no token configured, false otherwise
  */
-export function validateBearerToken(
-  req: http.IncomingMessage,
-  config: BridgeConfig
-): boolean {
+export function validateBearerToken(req: http.IncomingMessage, config: BridgeConfig): boolean {
   if (!config.token) {
     return true; // No token configured, skip validation
   }
@@ -49,10 +48,7 @@ export function validateBearerToken(
  * @param maxBytes - Maximum body size in bytes
  * @returns Request body as string
  */
-export async function readBodyWithLimit(
-  req: http.IncomingMessage,
-  maxBytes: number
-): Promise<string> {
+export async function readBodyWithLimit(req: http.IncomingMessage, maxBytes: number): Promise<string> {
   const chunks: Buffer[] = [];
   let totalBytes = 0;
 

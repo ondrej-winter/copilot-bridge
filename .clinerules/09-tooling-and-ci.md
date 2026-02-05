@@ -8,21 +8,18 @@ When validating changes, use this order:
 1. **Compile TypeScript**
    - `npm run compile`
 
-2. **Lint + Auto-fix**
-   - `npm run lint:fix` (if available)
+2. **Format + Lint + Auto-fix**
+   - `npm run check:fix`
 
-3. **Lint (no auto-fixes)**
-   - `npm run lint`
+3. **Format + Lint (check only, no auto-fixes)**
+   - `npm run check`
 
-4. **Type check**
-   - `tsc --noEmit` (if not covered by compile step)
-
-5. **Tests**
+4. **Tests**
    - `npm test`
 
 ## Expectations
 - Generated code MUST compile without errors (`npm run compile`).
-- Code MUST satisfy linting rules (`npm run lint`) with zero violations.
+- Code MUST pass Biome checks (`npm run check`) with zero violations.
 - If you change behavior, you MUST add/adjust tests and run `npm test`.
 - Do not disable lint rules unless explicitly requested; prefer refactoring.
 - CI failures must be fixed at the root cause.
@@ -40,15 +37,18 @@ When validating changes, use this order:
 
 ## TypeScript-specific tooling
 - **Compiler**: `tsc` for type checking and compilation
-- **Linter**: ESLint for code quality
-- **Formatter**: Prettier (usually integrated with ESLint)
-- **Test runner**: Jest or Mocha
-- **Package manager**: npm or pnpm
+- **Formatter & Linter**: Biome (all-in-one toolchain)
+- **Test runner**: Vitest
+- **Package manager**: npm
 
 ## Common npm scripts
 - `npm run compile`: Compile TypeScript to JavaScript
 - `npm run watch`: Watch mode for development
-- `npm run lint`: Run linter
+- `npm run format`: Format code with Biome
+- `npm run format:check`: Check formatting without changes
+- `npm run lint`: Lint code with Biome
 - `npm run lint:fix`: Auto-fix linting issues
+- `npm run check`: Run format + lint checks (combined)
+- `npm run check:fix`: Auto-fix format + lint issues (combined)
 - `npm test`: Run test suite
-- `npm run pretest`: Pre-test setup (usually runs compile)
+- `npm run pretest`: Pre-test setup (runs compile)

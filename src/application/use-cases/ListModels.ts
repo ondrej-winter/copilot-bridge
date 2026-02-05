@@ -1,6 +1,6 @@
-import { LanguageModelPort } from '../ports/LanguageModelPort';
-import { LoggerPort } from '../ports/LoggerPort';
-import { ModelsResponseDTO, ModelInfoDetailDTO } from '../dtos/ModelsResponseDTO';
+import type { ModelInfoDetailDTO, ModelsResponseDTO } from '../dtos/ModelsResponseDTO';
+import type { LanguageModelPort } from '../ports/LanguageModelPort';
+import type { LoggerPort } from '../ports/LoggerPort';
 
 /**
  * Use case for listing available language models
@@ -18,7 +18,7 @@ export class ListModels {
 
     this.logger.info(`[Models] Found ${models.length} total models`);
 
-    const modelDTOs: ModelInfoDetailDTO[] = models.map(model => ({
+    const modelDTOs: ModelInfoDetailDTO[] = models.map((model) => ({
       id: model.id,
       vendor: model.vendor,
       family: model.family,

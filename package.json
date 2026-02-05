@@ -69,11 +69,26 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
-    "lint": "eslint src --ext ts"
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.14",
     "@types/node": "^18.x",
     "@types/vscode": "^1.85.0",
-    "typescript": "^5.3.0"
+    "@vitest/coverage-v8": "^4.0.18",
+    "openai": "^4.28.0",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.18"
   }
 }

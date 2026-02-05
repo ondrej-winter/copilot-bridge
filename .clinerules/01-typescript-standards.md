@@ -15,10 +15,9 @@ Use these rules for all TypeScript code in this repo to keep behavior predictabl
 - **Tests**: `describe('ClassName')` and `it('should do something')` focused on behavior.
 
 ## Formatting
-- **Must** use ESLint + Prettier configuration; do not hand-format or fight the formatter.
-- **Must** run `npm run lint:fix` to auto-fix issues before committing.
+- **Must** use Biome for formatting and linting; do not hand-format or fight the formatter.
+- **Must** run `npm run check:fix` to auto-fix formatting and linting issues before committing.
 - Prefer explicit, readable code over clever one-liners.
-- Use trailing commas in multi-line objects/arrays for cleaner diffs.
 
 ## Type Safety
 - **Must** enable strict mode in `tsconfig.json` (`"strict": true`).

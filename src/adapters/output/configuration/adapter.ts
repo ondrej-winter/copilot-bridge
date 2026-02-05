@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ConfigurationPort, BridgeConfig } from '../../../application/ports/ConfigurationPort';
+import type { BridgeConfig, ConfigurationPort } from '../../../application/ports/ConfigurationPort';
 
 /**
  * Adapter for VS Code configuration API

@@ -1,22 +1,17 @@
-import * as http from 'http';
-import { ProcessChatRequest } from '../../../application/use-cases/ProcessChatRequest';
-import { ListModels } from '../../../application/use-cases/ListModels';
-import { ChatRequestDTO } from '../../../application/dtos/ChatRequestDTO';
-import { BridgeConfig } from '../../../application/ports/ConfigurationPort';
-import { LoggerPort } from '../../../application/ports/LoggerPort';
+import type * as http from 'node:http';
+import type { ChatRequestDTO } from '../../../application/dtos/ChatRequestDTO';
+import type { BridgeConfig } from '../../../application/ports/ConfigurationPort';
+import type { LoggerPort } from '../../../application/ports/LoggerPort';
+import type { ListModels } from '../../../application/use-cases/ListModels';
+import type { ProcessChatRequest } from '../../../application/use-cases/ProcessChatRequest';
 import { ValidationError } from '../../../domain/exceptions';
+import type { ErrorResponse } from './types';
 import { readBodyWithLimit } from './validation';
-import { ErrorResponse } from './types';
 
 /**
  * Send error response
  */
-function sendError(
-  res: http.ServerResponse,
-  status: number,
-  error: string,
-  details?: string
-): void {
+function sendError(res: http.ServerResponse, status: number, error: string, details?: string): void {
   res.writeHead(status, { 'Content-Type': 'application/json' });
   const response: ErrorResponse = { error };
   if (details) {
@@ -26,7 +21,7 @@ function sendError(
 }
 
 /**
- * Handle POST /v1/chat
+ * Handle POST /v1/chat or /v1/chat/completions
  */
 export async function handleChatRequest(
   req: http.IncomingMessage,
@@ -43,7 +38,7 @@ export async function handleChatRequest(
     let chatRequest: ChatRequestDTO;
     try {
       chatRequest = JSON.parse(body);
-    } catch (err) {
+    } catch (_err) {
       sendError(res, 400, 'Bad Request', 'Invalid JSON payload');
       return;
     }
@@ -51,9 +46,39 @@ export async function handleChatRequest(
     // Process request through use case
     const response = await processChatRequest.execute(chatRequest);
 
-    // Send response
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(response, null, 2));
+    // Check if this is an OpenAI-compatible request
+    const isOpenAIFormat = req.url === '/v1/chat/completions';
+
+    if (isOpenAIFormat) {
+      // Transform to OpenAI API format
+      const openAIResponse = {
+        id: response.id,
+        object: 'chat.completion',
+        created: Math.floor(new Date(response.meta.startedAt).getTime() / 1000),
+        model: response.model.family,
+        choices: [
+          {
+            index: 0,
+            message: {
+              role: 'assistant',
+              content: response.output_text
+            },
+            finish_reason: 'stop'
+          }
+        ],
+        usage: {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0
+        }
+      };
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(openAIResponse, null, 2));
+    } else {
+      // Original bridge format
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(response, null, 2));
+    }
   } catch (err) {
     logger.error('[Error] Chat request failed', err instanceof Error ? err : undefined);
 
@@ -62,12 +87,7 @@ export async function handleChatRequest(
     } else if (err instanceof Error && err.message.includes('exceeds maximum size')) {
       sendError(res, 400, 'Bad Request', err.message);
     } else {
-      sendError(
-        res,
-        500,
-        'Internal Server Error',
-        err instanceof Error ? err.message : String(err)
-      );
+      sendError(res, 500, 'Internal Server Error', err instanceof Error ? err.message : String(err));
     }
   }
 }
@@ -76,7 +96,7 @@ export async function handleChatRequest(
  * Handle GET /v1/models
  */
 export async function handleModelsRequest(
-  req: http.IncomingMessage,
+  _req: http.IncomingMessage,
   res: http.ServerResponse,
   listModels: ListModels,
   logger: LoggerPort
@@ -89,12 +109,7 @@ export async function handleModelsRequest(
   } catch (err) {
     logger.error('[Error] Models request failed', err instanceof Error ? err : undefined);
 
-    sendError(
-      res,
-      500,
-      'Internal Server Error',
-      err instanceof Error ? err.message : String(err)
-    );
+    sendError(res, 500, 'Internal Server Error', err instanceof Error ? err.message : String(err));
   }
 }
 

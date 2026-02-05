@@ -1,11 +1,11 @@
-import * as http from 'http';
-import { ProcessChatRequest } from '../../../application/use-cases/ProcessChatRequest';
-import { ListModels } from '../../../application/use-cases/ListModels';
-import { ConfigurationPort } from '../../../application/ports/ConfigurationPort';
-import { LoggerPort } from '../../../application/ports/LoggerPort';
-import { isLocalhost, validateBearerToken } from './validation';
+import * as http from 'node:http';
+import type { ConfigurationPort } from '../../../application/ports/ConfigurationPort';
+import type { LoggerPort } from '../../../application/ports/LoggerPort';
+import type { ListModels } from '../../../application/use-cases/ListModels';
+import type { ProcessChatRequest } from '../../../application/use-cases/ProcessChatRequest';
 import { handleChatRequest, handleModelsRequest, setCorsHeaders } from './routes';
-import { ErrorResponse } from './types';
+import type { ErrorResponse } from './types';
+import { isLocalhost, validateBearerToken } from './validation';
 
 /**
  * HTTP server adapter for Copilot Bridge
@@ -34,7 +34,7 @@ export class HttpServerAdapter {
 
     // Create HTTP server
     this.server = http.createServer((req, res) => {
-      this.handleRequest(req, res).catch(err => {
+      this.handleRequest(req, res).catch((err) => {
         this.logger.error('[Error] Unhandled request error', err);
       });
     });
@@ -76,10 +76,7 @@ export class HttpServerAdapter {
     return this.server !== null;
   }
 
-  private async handleRequest(
-    req: http.IncomingMessage,
-    res: http.ServerResponse
-  ): Promise<void> {
+  private async handleRequest(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
     const config = this.configPort.getConfig();
 
     // Set CORS headers
@@ -94,9 +91,7 @@ export class HttpServerAdapter {
 
     // Check localhost
     if (!isLocalhost(req.socket.remoteAddress)) {
-      this.logger.warning(
-        `[Security] Rejected non-localhost request from ${req.socket.remoteAddress}`
-      );
+      this.logger.warning(`[Security] Rejected non-localhost request from ${req.socket.remoteAddress}`);
       res.writeHead(403, { 'Content-Type': 'application/json' });
       res.end(
         JSON.stringify({
@@ -121,7 +116,7 @@ export class HttpServerAdapter {
     }
 
     // Route handling
-    if (req.url === '/v1/chat' && req.method === 'POST') {
+    if ((req.url === '/v1/chat' || req.url === '/v1/chat/completions') && req.method === 'POST') {
       await handleChatRequest(req, res, this.processChatRequest, config, this.logger);
     } else if (req.url === '/v1/models' && req.method === 'GET') {
       await handleModelsRequest(req, res, this.listModels, this.logger);
@@ -138,11 +133,7 @@ export class HttpServerAdapter {
 
   private normalizeBindAddress(bindAddress: string): string {
     // Enforce localhost binding
-    if (
-      bindAddress.includes('127.0.0.1') ||
-      bindAddress.includes('localhost') ||
-      bindAddress.includes('::1')
-    ) {
+    if (bindAddress.includes('127.0.0.1') || bindAddress.includes('localhost') || bindAddress.includes('::1')) {
       return bindAddress;
     }
     return '127.0.0.1';

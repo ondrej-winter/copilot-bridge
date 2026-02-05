@@ -1,5 +1,5 @@
-import * as vscode from 'vscode';
-import { LoggerPort } from '../../../application/ports/LoggerPort';
+import type * as vscode from 'vscode';
+import type { LoggerPort } from '../../../application/ports/LoggerPort';
 
 /**
  * Adapter for VS Code OutputChannel logging

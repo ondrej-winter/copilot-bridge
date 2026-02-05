@@ -1,4 +1,4 @@
-import { MessageRole } from '../../domain/entities/ChatMessage';
+import type { MessageRole } from '../../domain/entities/ChatMessage';
 
 /**
  * Message data transfer object

@@ -1,5 +1,5 @@
-import { ChatMessage } from '../../domain/entities/ChatMessage';
-import { ModelInfo } from '../../domain/entities/ModelInfo';
+import type { ChatMessage } from '../../domain/entities/ChatMessage';
+import type { ModelInfo } from '../../domain/entities/ModelInfo';
 
 /**
  * Port for language model operations

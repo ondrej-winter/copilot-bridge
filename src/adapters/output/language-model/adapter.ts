@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
-import { LanguageModelPort } from '../../../application/ports/LanguageModelPort';
-import { ChatMessage } from '../../../domain/entities/ChatMessage';
+import type { LanguageModelPort } from '../../../application/ports/LanguageModelPort';
+import type { LoggerPort } from '../../../application/ports/LoggerPort';
+import type { ChatMessage } from '../../../domain/entities/ChatMessage';
 import { ModelInfo } from '../../../domain/entities/ModelInfo';
 import { ModelUnavailableError } from '../../../domain/exceptions';
-import { LoggerPort } from '../../../application/ports/LoggerPort';
 
 /**
  * Adapter for VS Code Language Model API
@@ -39,11 +39,7 @@ export class VSCodeLanguageModelAdapter implements LanguageModelPort {
     this.logger.info(`[Model] Prepared ${vscodeMessages.length} messages for LM`);
 
     // Send request and buffer response
-    const request = await model.sendRequest(
-      vscodeMessages,
-      {},
-      new vscode.CancellationTokenSource().token
-    );
+    const request = await model.sendRequest(vscodeMessages, {}, new vscode.CancellationTokenSource().token);
 
     let outputText = '';
     for await (const fragment of request.text) {
@@ -60,7 +56,7 @@ export class VSCodeLanguageModelAdapter implements LanguageModelPort {
 
     this.logger.info(`[Models] Found ${models.length} total models`);
 
-    return models.map(model => this.convertToModelInfo(model));
+    return models.map((model) => this.convertToModelInfo(model));
   }
 
   getCurrentModel(): ModelInfo | null {
@@ -104,7 +100,7 @@ export class VSCodeLanguageModelAdapter implements LanguageModelPort {
     const vscodeMessages: vscode.LanguageModelChatMessage[] = [];
 
     // Find system message if any
-    const systemMessage = messages.find(m => m.isSystem());
+    const systemMessage = messages.find((m) => m.isSystem());
     let userMessagesStarted = false;
 
     for (const msg of messages) {
@@ -135,10 +131,7 @@ export class VSCodeLanguageModelAdapter implements LanguageModelPort {
 
     // Capture all enumerable properties beyond the known ones
     for (const key in model) {
-      if (
-        model.hasOwnProperty(key) &&
-        !['id', 'vendor', 'family', 'name', 'maxInputTokens', 'version'].includes(key)
-      ) {
+      if (Object.hasOwn(model, key) && !['id', 'vendor', 'family', 'name', 'maxInputTokens', 'version'].includes(key)) {
         additionalProperties[key] = (model as any)[key];
       }
     }

@@ -1,10 +1,10 @@
 import { ChatMessage } from '../../domain/entities/ChatMessage';
-import { RequestId } from '../../domain/value-objects/RequestId';
 import { ValidationError } from '../../domain/exceptions';
-import { LanguageModelPort } from '../ports/LanguageModelPort';
-import { LoggerPort } from '../ports/LoggerPort';
-import { ChatRequestDTO } from '../dtos/ChatRequestDTO';
-import { ChatResponseDTO } from '../dtos/ChatResponseDTO';
+import { RequestId } from '../../domain/value-objects/RequestId';
+import type { ChatRequestDTO } from '../dtos/ChatRequestDTO';
+import type { ChatResponseDTO } from '../dtos/ChatResponseDTO';
+import type { LanguageModelPort } from '../ports/LanguageModelPort';
+import type { LoggerPort } from '../ports/LoggerPort';
 
 /**
  * Use case for processing chat requests
@@ -19,10 +19,10 @@ export class ProcessChatRequest {
     const requestId = RequestId.generate();
     const startedAt = new Date().toISOString();
 
-    this.logger.info(`[${requestId}] Processing chat request with ${request.messages.length} messages`);
-
     // Validate request
     this.validateRequest(request);
+
+    this.logger.info(`[${requestId}] Processing chat request with ${request.messages.length} messages`);
 
     // Convert DTOs to domain entities
     const messages = this.convertToDomainMessages(request);
@@ -30,10 +30,7 @@ export class ProcessChatRequest {
     this.logger.info(`[${requestId}] Validated ${messages.length} messages`);
 
     // Send request to language model
-    const outputText = await this.languageModelPort.sendRequest(
-      messages,
-      request.model?.family
-    );
+    const outputText = await this.languageModelPort.sendRequest(messages, request.model?.family);
 
     const endedAt = new Date().toISOString();
 
@@ -70,8 +67,6 @@ export class ProcessChatRequest {
   }
 
   private convertToDomainMessages(request: ChatRequestDTO): ChatMessage[] {
-    return request.messages.map(msg => 
-      new ChatMessage(msg.role, msg.content)
-    );
+    return request.messages.map((msg) => new ChatMessage(msg.role, msg.content));
   }
 }
