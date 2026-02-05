@@ -1,0 +1,1 @@
+export { VSCodeLoggerAdapter } from './adapter';

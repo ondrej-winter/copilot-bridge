@@ -1,0 +1,1 @@
+export { VSCodeConfigurationAdapter } from './adapter';
