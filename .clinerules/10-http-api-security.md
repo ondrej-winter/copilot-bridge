@@ -21,7 +21,7 @@ httpServer.listen(port, '127.0.0.1', () => {
 ### Body size limit pattern
 ```typescript
 async function readBodyWithLimit(
-  req: http.IncomingMessage, 
+  req: http.IncomingMessage,
   maxBytes: number
 ): Promise<string> {
   const chunks: Buffer[] = [];
@@ -46,9 +46,9 @@ try {
   requestData = JSON.parse(body);
 } catch (err) {
   res.writeHead(400, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ 
-    error: 'Bad Request', 
-    details: 'Invalid JSON' 
+  res.end(JSON.stringify({
+    error: 'Bad Request',
+    details: 'Invalid JSON'
   }));
   return;
 }
@@ -56,9 +56,9 @@ try {
 // Validate required fields
 if (!requestData.messages || !Array.isArray(requestData.messages)) {
   res.writeHead(400, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ 
-    error: 'Bad Request', 
-    details: 'messages array is required' 
+  res.end(JSON.stringify({
+    error: 'Bad Request',
+    details: 'messages array is required'
   }));
   return;
 }
@@ -77,9 +77,9 @@ interface ErrorResponse {
 }
 
 function sendError(
-  res: http.ServerResponse, 
-  status: number, 
-  error: string, 
+  res: http.ServerResponse,
+  status: number,
+  error: string,
   details?: string
 ): void {
   res.writeHead(status, { 'Content-Type': 'application/json' });

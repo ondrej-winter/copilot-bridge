@@ -66,7 +66,7 @@ describe('ChatMessage', () => {
   describe('constructor', () => {
     it('should create a valid chat message', () => {
       const message = new ChatMessage('user', 'Hello');
-      
+
       expect(message.role).toBe('user');
       expect(message.content).toBe('Hello');
     });

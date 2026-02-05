@@ -100,25 +100,22 @@ describe('OpenAI SDK E2E Tests', () => {
   });
 
   describe('models.list', () => {
-    it('should list available models', async () => {
-      // Note: OpenAI SDK expects a different endpoint structure
-      // We'll make a raw fetch request instead
-      const response = await fetch(`${BASE_URL}/models`, {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`
-        }
-      });
+    it('should list available models using OpenAI SDK', async () => {
+      const models = await client.models.list();
 
-      expect(response.ok).toBe(true);
-      const data = await response.json();
+      expect(models.data).toBeDefined();
+      expect(Array.isArray(models.data)).toBe(true);
+      expect(models.data.length).toBeGreaterThan(0);
 
-      expect(data.models).toBeDefined();
-      expect(Array.isArray(data.models)).toBe(true);
-      expect(data.count).toBeDefined();
-      expect(data.models.length).toBeGreaterThan(0);
+      // Verify model structure
+      const firstModel = models.data[0];
+      expect(firstModel.id).toBeDefined();
+      expect(firstModel.object).toBe('model');
+      expect(firstModel.created).toBeDefined();
+      expect(firstModel.owned_by).toBeDefined();
 
-      console.log('Available models:', data.models.length);
-      console.log('First model:', data.models[0]);
+      console.log('Available models:', models.data.length);
+      console.log('First model:', firstModel);
     }, 30000);
   });
 

@@ -196,27 +196,27 @@ BEARER_TOKEN = ""  # Set if configured in VS Code settings
 def chat_with_copilot(messages, model_family=None):
     """
     Send chat request to Copilot Bridge.
-    
+
     Args:
         messages: List of message dicts with 'role' and 'content'
         model_family: Optional model family (e.g., 'gpt-4o')
-    
+
     Returns:
         Response dict with output_text and metadata
     """
     url = f"{BASE_URL}/v1/chat"
-    
+
     payload = {"messages": messages}
     if model_family:
         payload["model"] = {"family": model_family}
-    
+
     headers = {"Content-Type": "application/json"}
     if BEARER_TOKEN:
         headers["Authorization"] = f"Bearer {BEARER_TOKEN}"
-    
+
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()
-    
+
     return response.json()
 
 
@@ -225,7 +225,7 @@ def example_simple():
     messages = [
         {"role": "user", "content": "What is TypeScript?"}
     ]
-    
+
     result = chat_with_copilot(messages)
     print(f"Response: {result['output_text']}")
     print(f"Model: {result['model']['vendor']}/{result['model']['family']}")
@@ -237,7 +237,7 @@ def example_with_system():
         {"role": "system", "content": "You are a Python expert. Keep responses concise."},
         {"role": "user", "content": "How do I read a JSON file in Python?"}
     ]
-    
+
     result = chat_with_copilot(messages, model_family="gpt-4o")
     print(f"Response: {result['output_text']}")
 
@@ -249,7 +249,7 @@ def example_conversation():
         {"role": "assistant", "content": "A closure is a function that has access to variables in its outer scope..."},
         {"role": "user", "content": "Can you show me an example?"}
     ]
-    
+
     result = chat_with_copilot(messages)
     print(f"Response: {result['output_text']}")
 
@@ -260,15 +260,15 @@ def example_with_error_handling():
         messages = [
             {"role": "user", "content": "Hello, Copilot!"}
         ]
-        
+
         result = chat_with_copilot(messages)
         print(f" Success: {result['output_text'][:100]}...")
-        
+
     except requests.exceptions.HTTPError as e:
         error_data = e.response.json()
         print(f" Error {e.response.status_code}: {error_data['error']}")
         print(f"  Details: {error_data.get('details', 'N/A')}")
-    
+
     except requests.exceptions.ConnectionError:
         print(" Connection failed. Is Copilot Bridge running?")
 
@@ -277,19 +277,19 @@ if __name__ == "__main__":
     # Run examples
     print("Example 1: Simple question")
     example_simple()
-    
+
     print("\n" + "="*60 + "\n")
-    
+
     print("Example 2: With system message")
     example_with_system()
-    
+
     print("\n" + "="*60 + "\n")
-    
+
     print("Example 3: Multi-turn conversation")
     example_conversation()
-    
+
     print("\n" + "="*60 + "\n")
-    
+
     print("Example 4: Error handling")
     example_with_error_handling()
 ```

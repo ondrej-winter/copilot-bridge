@@ -126,10 +126,10 @@ describe('HTTP Server Routes', () => {
   });
 
   describe('handleModelsRequest', () => {
-    it('should return list of models', async () => {
+    it('should return list of models in OpenAI format', async () => {
       const req = {} as IncomingMessage;
 
-      const response = {
+      const internalResponse = {
         models: [
           {
             id: 'copilot-gpt-4o',
@@ -142,13 +142,26 @@ describe('HTTP Server Routes', () => {
         count: 1
       };
 
-      vi.mocked(mockListModels.execute).mockResolvedValue(response);
+      vi.mocked(mockListModels.execute).mockResolvedValue(internalResponse);
 
       await handleModelsRequest(req, mockRes, mockListModels, mockLogger);
 
       expect(mockListModels.execute).toHaveBeenCalledOnce();
       expect(mockRes.writeHead).toHaveBeenCalledWith(200, { 'Content-Type': 'application/json' });
-      expect(mockRes.end).toHaveBeenCalledWith(JSON.stringify(response, null, 2));
+
+      // Verify OpenAI format is returned
+      const callArg = vi.mocked(mockRes.end).mock.calls[0][0] as string;
+      const parsedResponse = JSON.parse(callArg);
+
+      expect(parsedResponse.object).toBe('list');
+      expect(parsedResponse.data).toBeDefined();
+      expect(parsedResponse.data).toHaveLength(1);
+      expect(parsedResponse.data[0]).toMatchObject({
+        id: 'copilot-gpt-4o',
+        object: 'model',
+        owned_by: 'copilot'
+      });
+      expect(parsedResponse.data[0].created).toBeDefined();
     });
 
     it('should return 500 for internal errors', async () => {

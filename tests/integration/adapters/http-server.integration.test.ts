@@ -165,14 +165,25 @@ describe('HTTP Server Integration', () => {
       await server.start();
     });
 
-    it('should return list of models', async () => {
+    it('should return list of models in OpenAI format', async () => {
       const response = await makeRequest('GET', '/v1/models');
 
       expect(response.statusCode).toBe(200);
       const data = JSON.parse(response.body);
-      expect(data.models).toHaveLength(1);
-      expect(data.models[0].id).toBe('copilot-gpt-4o');
-      expect(data.count).toBe(1);
+
+      // Verify OpenAI format
+      expect(data.object).toBe('list');
+      expect(data.data).toBeDefined();
+      expect(Array.isArray(data.data)).toBe(true);
+      expect(data.data.length).toBeGreaterThan(0);
+
+      // Verify model structure
+      const firstModel = data.data[0];
+      expect(firstModel.id).toBe('copilot-gpt-4o');
+      expect(firstModel.object).toBe('model');
+      expect(firstModel.created).toBeDefined();
+      expect(typeof firstModel.created).toBe('number');
+      expect(firstModel.owned_by).toBe('copilot');
     });
   });
 

@@ -4,9 +4,9 @@ Get up and running with Copilot Bridge in 5 minutes!
 
 ## Prerequisites
 
-✅ VS Code 1.85.0+  
-✅ GitHub Copilot extension installed  
-✅ Active GitHub Copilot subscription  
+✅ VS Code 1.85.0+
+✅ GitHub Copilot extension installed
+✅ Active GitHub Copilot subscription
 
 ## Step 1: Install Dependencies
 
@@ -79,13 +79,13 @@ Open VS Code settings (`Cmd+,` / `Ctrl+,`) and search for "Copilot Bridge":
 
 ## Troubleshooting
 
-**Problem**: "No Copilot models available"  
+**Problem**: "No Copilot models available"
 **Solution**: Ensure GitHub Copilot extension is authenticated
 
-**Problem**: "Port already in use"  
+**Problem**: "Port already in use"
 **Solution**: Change the port in settings or stop the service using port 32123
 
-**Problem**: Python client can't connect  
+**Problem**: Python client can't connect
 **Solution**: Make sure the bridge is started (Step 4)
 
 ## Next Steps

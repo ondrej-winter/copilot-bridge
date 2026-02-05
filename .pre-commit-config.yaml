@@ -1,0 +1,25 @@
+default_language_version:
+  python: python3.14
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: npm-check
+        name: npm run check
+        entry: npm run check
+        language: system
+        pass_filenames: false
+        files: \.(ts|js|json)$

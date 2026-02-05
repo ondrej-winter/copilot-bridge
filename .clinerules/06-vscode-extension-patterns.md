@@ -13,11 +13,11 @@ Use these patterns when building VS Code extensions to follow best practices and
 ```typescript
 export function activate(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel('My Extension');
-  
+
   const command = vscode.commands.registerCommand('myExt.doSomething', async () => {
     // Command logic
   });
-  
+
   context.subscriptions.push(command, outputChannel);
 }
 
@@ -103,11 +103,11 @@ async function selectModel(family?: string): Promise<vscode.LanguageModelChat> {
     vendor: 'copilot',
     family: family
   });
-  
+
   if (models.length === 0) {
     throw new Error('No Copilot models available');
   }
-  
+
   return models[0];
 }
 
@@ -117,12 +117,12 @@ async function sendChatRequest(
 ): Promise<string> {
   const model = await selectModel();
   const request = await model.sendRequest(messages, {}, token);
-  
+
   let response = '';
   for await (const fragment of request.text) {
     response += fragment;
   }
-  
+
   return response;
 }
 ```
@@ -211,19 +211,19 @@ interface LanguageModelPort {
 // Adapter (infrastructure layer)
 class VSCodeLanguageModelAdapter implements LanguageModelPort {
   async sendRequest(messages: ChatMessage[]): Promise<string> {
-    const vscodeMessages = messages.map(m => 
+    const vscodeMessages = messages.map(m =>
       vscode.LanguageModelChatMessage.User(m.content)
     );
-    
+
     const model = await vscode.lm.selectChatModels({ vendor: 'copilot' })[0];
     const request = await model.sendRequest(vscodeMessages, {}, token);
-    
+
     // Buffer response
     let response = '';
     for await (const fragment of request.text) {
       response += fragment;
     }
-    
+
     return response;
   }
 }

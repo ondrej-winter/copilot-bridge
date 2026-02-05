@@ -1,5 +1,6 @@
 import type * as http from 'node:http';
 import type { ChatRequestDTO } from '../../../application/dtos/ChatRequestDTO';
+import type { ModelsListOpenAIDTO, OpenAIModelDTO } from '../../../application/dtos/ModelsResponseDTO';
 import type { BridgeConfig } from '../../../application/ports/ConfigurationPort';
 import type { LoggerPort } from '../../../application/ports/LoggerPort';
 import type { ListModels } from '../../../application/use-cases/ListModels';
@@ -104,8 +105,21 @@ export async function handleModelsRequest(
   try {
     const modelsResponse = await listModels.execute();
 
+    // Transform to OpenAI format
+    const openAIResponse: ModelsListOpenAIDTO = {
+      object: 'list',
+      data: modelsResponse.models.map(
+        (model): OpenAIModelDTO => ({
+          id: model.id,
+          object: 'model',
+          created: Math.floor(Date.now() / 1000),
+          owned_by: model.vendor
+        })
+      )
+    };
+
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(modelsResponse, null, 2));
+    res.end(JSON.stringify(openAIResponse, null, 2));
   } catch (err) {
     logger.error('[Error] Models request failed', err instanceof Error ? err : undefined);
 

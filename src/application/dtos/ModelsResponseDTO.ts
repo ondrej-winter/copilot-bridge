@@ -18,3 +18,21 @@ export interface ModelsResponseDTO {
   models: ModelInfoDetailDTO[];
   count: number;
 }
+
+/**
+ * OpenAI-compatible model object
+ */
+export interface OpenAIModelDTO {
+  id: string;
+  object: 'model';
+  created: number;
+  owned_by: string;
+}
+
+/**
+ * OpenAI-compatible models list response
+ */
+export interface ModelsListOpenAIDTO {
+  object: 'list';
+  data: OpenAIModelDTO[];
+}

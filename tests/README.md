@@ -105,17 +105,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 describe('MyClass', () => {
   let mockPort: MyPort;
-  
+
   beforeEach(() => {
     mockPort = {
       method: vi.fn().mockResolvedValue('result')
     };
   });
-  
+
   it('should do something', async () => {
     const instance = new MyClass(mockPort);
     const result = await instance.doSomething();
-    
+
     expect(result).toBe('expected');
     expect(mockPort.method).toHaveBeenCalledOnce();
   });
@@ -130,19 +130,19 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('HTTP Server Integration', () => {
   let server: HttpServerAdapter;
-  
+
   beforeEach(async () => {
     // Setup with mocked ports
     server = new HttpServerAdapter(/* ... */);
     await server.start();
   });
-  
+
   afterEach(async () => {
     if (server.isRunning()) {
       await server.stop();
     }
   });
-  
+
   it('should handle request', async () => {
     const response = await fetch('http://127.0.0.1:port/endpoint');
     expect(response.ok).toBe(true);
@@ -163,12 +163,12 @@ describe('OpenAI SDK E2E', () => {
       apiKey: process.env.BRIDGE_TOKEN || 'dummy',
       baseURL: 'http://127.0.0.1:32123/v1'
     });
-    
+
     const completion = await client.chat.completions.create({
       model: 'gpt-4o',
       messages: [{ role: 'user', content: 'Hello' }]
     });
-    
+
     expect(completion.choices[0].message.content).toBeTruthy();
   }, 30000);
 });
