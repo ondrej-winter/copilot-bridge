@@ -8,7 +8,7 @@ export class ModelInfo {
   readonly name: string;
   readonly maxInputTokens: number;
   readonly version?: string;
-  readonly additionalProperties: Record<string, any>;
+  readonly additionalProperties: Record<string, unknown>;
 
   constructor(
     id: string,
@@ -17,7 +17,7 @@ export class ModelInfo {
     name: string,
     maxInputTokens: number,
     version?: string,
-    additionalProperties?: Record<string, any>
+    additionalProperties?: Record<string, unknown>
   ) {
     this.id = id;
     this.vendor = vendor;

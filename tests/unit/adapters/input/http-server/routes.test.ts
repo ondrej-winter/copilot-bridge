@@ -22,11 +22,11 @@ describe('HTTP Server Routes', () => {
   beforeEach(() => {
     mockProcessChatRequest = {
       execute: vi.fn()
-    } as any;
+    } as unknown as ProcessChatRequest;
 
     mockListModels = {
       execute: vi.fn()
-    } as any;
+    } as unknown as ListModels;
 
     mockLogger = {
       info: vi.fn(),
@@ -47,7 +47,7 @@ describe('HTTP Server Routes', () => {
       writeHead: vi.fn(),
       end: vi.fn(),
       setHeader: vi.fn()
-    } as any;
+    } as unknown as ServerResponse;
   });
 
   describe('handleChatRequest', () => {

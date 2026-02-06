@@ -26,9 +26,9 @@ describe('ChatMessage', () => {
     });
 
     it('should throw error for invalid role', () => {
-      expect(() => new ChatMessage('invalid' as any, 'Hello')).toThrow(InvalidMessageError);
+      expect(() => new ChatMessage('invalid' as unknown as 'user', 'Hello')).toThrow(InvalidMessageError);
 
-      expect(() => new ChatMessage('invalid' as any, 'Hello')).toThrow(
+      expect(() => new ChatMessage('invalid' as unknown as 'user', 'Hello')).toThrow(
         "Invalid message role: invalid. Must be 'system', 'user', or 'assistant'"
       );
     });
@@ -46,9 +46,9 @@ describe('ChatMessage', () => {
     });
 
     it('should throw error for non-string content', () => {
-      expect(() => new ChatMessage('user', null as any)).toThrow(InvalidMessageError);
+      expect(() => new ChatMessage('user', null as unknown as string)).toThrow(InvalidMessageError);
 
-      expect(() => new ChatMessage('user', null as any)).toThrow('Message content must be a string');
+      expect(() => new ChatMessage('user', null as unknown as string)).toThrow('Message content must be a string');
     });
   });
 

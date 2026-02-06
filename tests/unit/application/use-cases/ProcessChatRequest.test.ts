@@ -101,7 +101,7 @@ describe('ProcessChatRequest', () => {
     });
 
     it('should throw ValidationError when messages is not an array', async () => {
-      const request = { messages: 'not an array' } as any;
+      const request = { messages: 'not an array' } as unknown as ChatRequestDTO;
 
       await expect(useCase.execute(request)).rejects.toThrow(ValidationError);
     });

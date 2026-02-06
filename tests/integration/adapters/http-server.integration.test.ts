@@ -211,7 +211,7 @@ describe('HTTP Server Integration', () => {
   function makeRequest(
     method: string,
     path: string,
-    body?: any,
+    body?: unknown,
     headers: Record<string, string> = {}
   ): Promise<{ statusCode: number; headers: http.IncomingHttpHeaders; body: string }> {
     return new Promise((resolve, reject) => {

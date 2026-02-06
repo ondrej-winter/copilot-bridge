@@ -127,12 +127,12 @@ export class VSCodeLanguageModelAdapter implements LanguageModelPort {
   }
 
   private convertToModelInfo(model: vscode.LanguageModelChat): ModelInfo {
-    const additionalProperties: Record<string, any> = {};
+    const additionalProperties: Record<string, unknown> = {};
 
     // Capture all enumerable properties beyond the known ones
     for (const key in model) {
       if (Object.hasOwn(model, key) && !['id', 'vendor', 'family', 'name', 'maxInputTokens', 'version'].includes(key)) {
-        additionalProperties[key] = (model as any)[key];
+        additionalProperties[key] = model[key as keyof vscode.LanguageModelChat];
       }
     }
 
@@ -142,7 +142,7 @@ export class VSCodeLanguageModelAdapter implements LanguageModelPort {
       model.family,
       model.name,
       model.maxInputTokens,
-      (model as any).version,
+      (model as { version?: string }).version,
       additionalProperties
     );
   }

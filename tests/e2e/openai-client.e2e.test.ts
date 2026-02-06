@@ -93,7 +93,7 @@ describe('OpenAI SDK E2E Tests', () => {
       await expect(
         client.chat.completions.create({
           model: 'gpt-4o',
-          messages: [] as any
+          messages: [] as unknown as [{ role: 'user'; content: string }]
         })
       ).rejects.toThrow();
     });

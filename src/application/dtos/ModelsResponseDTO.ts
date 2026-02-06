@@ -8,7 +8,7 @@ export interface ModelInfoDetailDTO {
   name: string;
   maxInputTokens: number;
   version?: string;
-  [key: string]: any;
+  [key: string]: string | number | undefined | unknown;
 }
 
 /**
