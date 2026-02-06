@@ -37,6 +37,7 @@ describe('HTTP Server Integration', () => {
     };
 
     mockLogger = {
+      debug: vi.fn(),
       info: vi.fn(),
       warning: vi.fn(),
       error: vi.fn(),
